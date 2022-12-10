@@ -1,17 +1,8 @@
-const cardList = [
-  {
-    title: "Doggie 2",
-    image: "images/dog2.jpeg",
-    link: "About Dog 2",
-    desciption: "Demo desciption about Dog 2",
-  },
-  {
-    title: "Doggie 3",
-    image: "images/dog3.jpeg",
-    link: "About Dog 3",
-    desciption: "Demo desciption about Dog 3",
-  },
-];
+const getCards = () => {
+  $.get("/api/cards", (response) => {
+    addCards(response.data);
+  });
+};
 
 const clickMe = () => {
   alert("Thanks for clicking me. Hope you have a nice day!");
@@ -42,27 +33,35 @@ const addCards = (items) => {
   });
 };
 
-$(document).ready(function () {
-  $(".materialboxed").materialbox();
-  $("#clickMeButton").click(() => {
-    addCards(cardList);
+const addCardsToDB = (card) => {
+  $.ajax({
+    url: "/api/cards",
+    data: card,
+    type: "POST",
+    success: (result) => {
+      alert(result.message);
+      location.reload();
+    },
   });
-});
+};
 
 const submitForm = () => {
   let formData = {};
-  formData.first_name = $("#first_name").val();
-  formData.last_name = $("#last_name").val();
-  formData.password = $("#password").val();
-  formData.email = $("#email").val();
+  formData.title = $("#title").val();
+  formData.image = $("#image").val();
+  formData.link = $("#link").val();
+  formData.desciption = $("#description").val();
 
   console.log("Form Data Submitted: ", formData);
+  addCardsToDB(formData);
 };
 
 $(document).ready(function () {
   $(".materialboxed").materialbox();
   $("#formSubmit").click(() => {
     submitForm();
+    $("#modal1").modal("hide");
   });
-  $(".modal").modal();
+  getCards();
+  $("#modal1").modal();
 });
